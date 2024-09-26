@@ -1,71 +1,19 @@
 const express = require('express')
 const router = express.Router()
-const Task = require('../models/task')
+const Task = require('../models/Task')
+const taskController = require('../controllers/Taskcontroller')
 
 
-router.post('/create', async(req,res)=> {
-    try{
-        const task = await Task.create(req.body)
-        res.status(201).send(task)
-    } catch (error) {
-        console.error(error)
-        res.status(500).send({message: 'There was a problem trying to create a task'})
-    }
-})
+router.post('/create', taskController.create)
 
-router.get('/', async (req,res) => {
-    try {
-        const tasks = await Task.find({})
-        res.json(tasks)
-    } catch (error) {
-        console.error(error)
-        res.status(500).send({message: 'There was a problem getting tasks'})
-    }
-})
+router.get('/', taskController.getAll)
 
-router.get('/id/:_id', async(req,res)=> {
-    try {
-        const idTask = req.params._id
-        const task = await Task.findById(idTask).exec()
-        res.json(task)
-    } catch (error) {
-        console.error(error)
-        res.status(500).send({message: 'There was a problem getting task by id'})
-    }
-})
+router.get('/id/:_id', taskController.getByID)
 
-router.put('/markAsCompleted/:_id', async (req,res) => {
-    try {
-        const idTask = req.params._id
-        await Task.updateOne({_id: idTask}, {completed: true})
-        const task = await Task.findById(idTask).exec()
-        res.json(task)
-    } catch (error) {
-        console.error(error)
-        res.status(500).send({message: 'There was a problem updating task'})
-    }
-})
+router.put('/markAsCompleted/:_id', taskController.markAsCompleted )
 
-router.put('/id/:_id', async (req,res) => {
-    try {
-        const idTask = req.params._id
-        await Task.updateOne({_id: idTask}, {title: req.body.title})
-        const task = await Task.findById(idTask).exec()
-        res.json(task)
-    } catch (error) {
-        console.error(error)
-        res.status(500).send({message: 'There was a problem updating task'})
-    }
-})
+router.put('/id/:_id', taskController.updateById)
 
-router.delete('/id/:_id', async (req,res) => {
-    try {
-        const idTask = req.params._id
-        const task = await Task.findByIdAndDelete(idTask)
-        res.status(201).send(task)
-    } catch (error) {
-        console.error(error)
-        res.status(500).send({message: 'There was a problem delete a task'})
-    }
-})
+router.delete('/id/:_id', taskController.delete)
+
 module.exports = router
